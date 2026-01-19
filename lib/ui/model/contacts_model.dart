@@ -1,0 +1,26 @@
+import 'package:contact_app/data/contact.dart';
+import 'package:faker/faker.dart';
+import 'package:scoped_model/scoped_model.dart';
+
+class ContactsModel extends Model {
+  List<Contact> _contacts = List.generate(50, (index) {
+    return Contact(
+      name: Faker().person.name(),
+      email: Faker().internet.email(),
+      phoneNumber: Faker().phoneNumber.us(),
+    );
+  });
+
+  // get only property, makes sure that
+  List<Contact> get contacts => _contacts;
+
+  void changeFavoriteStatus(int index) {
+    _contacts[index].isFavorite = !_contacts[index].isFavorite;
+    _contacts.sort((a, b) {
+      if (a.isFavorite && !b.isFavorite) return -1;
+      if (!a.isFavorite && b.isFavorite) return 1;
+      return 0;
+    });
+    notifyListeners();
+  }
+}

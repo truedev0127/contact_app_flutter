@@ -1,5 +1,7 @@
 import 'package:contact_app/ui/contacts_list/contacts_list_page.dart';
+import 'package:contact_app/ui/model/contacts_model.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,10 +13,13 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.lightBlue)),
-      home: ContactsListPage(),
+    return ScopedModel(
+      model: ContactsModel(),
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.lightBlue)),
+        home: ContactsListPage(),
+      ),
     );
   }
 }

@@ -1,7 +1,9 @@
 import 'package:contact_app/data/contact.dart';
 import 'package:contact_app/ui/contacts_list/widget/contact_title.dart';
+import 'package:contact_app/ui/model/contacts_model.dart';
 import 'package:flutter/material.dart';
 import 'package:faker/faker.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class ContactsListPage extends StatefulWidget {
   const ContactsListPage({super.key});
@@ -11,20 +13,6 @@ class ContactsListPage extends StatefulWidget {
 }
 
 class _ContactsListPageState extends State<ContactsListPage> {
-  late List<Contact> _contacts;
-
-  @override
-  void initState() {
-    super.initState();
-    _contacts = List.generate(50, (index) {
-      return Contact(
-        name: Faker().person.name(),
-        email: Faker().internet.email(),
-        phoneNumber: Faker().phoneNumber.us(),
-      );
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,21 +21,13 @@ class _ContactsListPageState extends State<ContactsListPage> {
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: ListView.builder(
-        itemCount: _contacts.length,
-        // Runs and Builds every single item list item
-        itemBuilder: (context, index) {
-          return ContactTitle(
-            contact: _contacts[index],
-            onFavoriteToggle: () {
-              setState(() {
-                _contacts[index].isFavorite = !_contacts[index].isFavorite;
-                _contacts.sort((a, b) {
-                  if (a.isFavorite && !b.isFavorite) return -1;
-                  if (!a.isFavorite && b.isFavorite) return 1;
-                  return 0;
-                });
-              });
+      body: ScopedModelDescendant<ContactsModel>(
+        builder: (context, child, model) {
+          return ListView.builder(
+            itemCount: model.contacts.length,
+            // Runs and Builds every single item list item
+            itemBuilder: (context, index) {
+              return ContactTitle(contactIndex: index);
             },
           );
         },
