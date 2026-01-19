@@ -17,7 +17,11 @@ class MyApp extends StatelessWidget {
       model: ContactsModel(),
       child: MaterialApp(
         title: 'Flutter Demo',
-        theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.lightBlue)),
+        theme: ThemeData(
+          colorScheme: .fromSeed(
+            seedColor: const Color.fromARGB(255, 252, 2, 2),
+          ),
+        ),
         home: ContactsListPage(),
       ),
     );

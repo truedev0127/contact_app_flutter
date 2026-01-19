@@ -71,6 +71,7 @@ class ContactTitle extends StatelessWidget {
       child: ListTile(
         title: Text(displayedContact.name),
         subtitle: Text(displayedContact.email),
+        leading: _buildCircleAvatar(displayedContact),
         trailing: IconButton(
           onPressed: () {
             model.changeFavoriteStatus(contactIndex);
@@ -92,6 +93,29 @@ class ContactTitle extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Hero _buildCircleAvatar(Contact displayedContact) {
+    return Hero(
+      tag: displayedContact.hashCode,
+      child: CircleAvatar(child: _buildCircleAvatarContent(displayedContact)),
+    );
+  }
+
+  Widget _buildCircleAvatarContent(Contact displayedContact) {
+    if (displayedContact.contactImageFile == null) {
+      return Text(displayedContact.name[0].toUpperCase());
+    } else {
+      return ClipOval(
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: Image.file(
+            displayedContact.contactImageFile!,
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+    }
   }
 
   void _deleteContact(BuildContext context) {

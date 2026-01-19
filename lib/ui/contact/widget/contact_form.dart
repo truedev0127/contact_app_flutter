@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:contact_app/data/contact.dart';
 import 'package:contact_app/ui/model/contacts_model.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class ContactForm extends StatefulWidget {
@@ -17,9 +20,21 @@ class _ContactFormState extends State<ContactForm> {
   late String _name;
   late String _email;
   late String _phoneNumber;
+  File? _contactImageFile;
 
   bool get isEditMode =>
       widget.editedContact != null && widget.contactIndex != null;
+
+  bool get hasSeletedCustomImage => _contactImageFile != null;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if (isEditMode) {
+      _contactImageFile = widget.editedContact?.contactImageFile;
+    }
+  }
 
   final _formKey = GlobalKey<FormState>();
 
@@ -30,6 +45,8 @@ class _ContactFormState extends State<ContactForm> {
       child: ListView(
         children: <Widget>[
           SizedBox(height: 16.0),
+          _buildContactPicture(),
+          SizedBox(height: 50.0),
           TextFormField(
             onSaved: (value) => _name = value!,
             initialValue: widget.editedContact?.name,
@@ -65,7 +82,7 @@ class _ContactFormState extends State<ContactForm> {
               ),
             ),
           ),
-          SizedBox(height: 16.0),
+          SizedBox(height: 30.0),
           ElevatedButton(
             onPressed: _onSaveContactButtonPressed,
             style: ElevatedButton.styleFrom(
@@ -89,6 +106,88 @@ class _ContactFormState extends State<ContactForm> {
         ],
       ),
     );
+  }
+
+  Widget _buildContactPicture() {
+    final halfScreenDiameter = MediaQuery.of(context).size.width / 2;
+    return Hero(
+      // Use editedContact's hashCode as tag in edit mode, else use 0
+      // to avoid tag conflicts
+      tag: widget.editedContact?.hashCode ?? 0,
+      child: GestureDetector(
+        onTap: _onContactPictureTapped,
+        child: CircleAvatar(
+          radius: halfScreenDiameter / 2,
+          child: _buildCircleAvatar(halfScreenDiameter),
+        ),
+      ),
+    );
+  }
+
+  void _onContactPictureTapped() {
+    final ImagePicker _imagePicker = ImagePicker();
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text('Choose from Gallery'),
+                onTap: () async {
+                  final XFile? image = await _imagePicker.pickImage(
+                    source: ImageSource.gallery,
+                  );
+                  // Handle the selected image
+                  setState(() {
+                    if (image != null) {
+                      _contactImageFile = File(image.path);
+                    }
+                  });
+                  Navigator.of(context).pop();
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.camera_alt),
+                title: Text('Take a Photo'),
+                onTap: () async {
+                  final XFile? image = await _imagePicker.pickImage(
+                    source: ImageSource.camera,
+                  );
+                  // Handle the captured image
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCircleAvatar(double halfScreenDiameter) {
+    if (isEditMode || hasSeletedCustomImage) {
+      return _buildEditModeCircleAvatarContent(halfScreenDiameter);
+    } else {
+      return Icon(Icons.person, size: halfScreenDiameter / 2);
+    }
+  }
+
+  Widget _buildEditModeCircleAvatarContent(double halfScreenDiameter) {
+    if (_contactImageFile == null) {
+      return Text(
+        widget.editedContact?.name[0].toUpperCase() ?? '',
+        style: TextStyle(fontSize: halfScreenDiameter / 2),
+      );
+    } else {
+      return AspectRatio(
+        aspectRatio: 1,
+        child: ClipOval(
+          child: Image.file(_contactImageFile!, fit: BoxFit.cover),
+        ),
+      );
+    }
   }
 
   String? _validateName(String? value) {
@@ -134,6 +233,7 @@ class _ContactFormState extends State<ContactForm> {
       email: _email,
       phoneNumber: _phoneNumber,
       isFavorite: widget.editedContact?.isFavorite ?? false,
+      contactImageFile: _contactImageFile,
     );
 
     if (isEditMode) {
