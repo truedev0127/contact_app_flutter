@@ -1,4 +1,7 @@
+import 'package:contact_app/data/contact.dart';
+import 'package:contact_app/ui/model/contacts_model.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class ContactForm extends StatefulWidget {
   const ContactForm({super.key});
@@ -13,6 +16,7 @@ class _ContactFormState extends State<ContactForm> {
   late String _phoneNumber;
 
   final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -22,6 +26,7 @@ class _ContactFormState extends State<ContactForm> {
           SizedBox(height: 16.0),
           TextFormField(
             onSaved: (value) => _name = value!,
+            validator: _validateName,
             decoration: InputDecoration(
               labelText: 'Name',
               border: OutlineInputBorder(
@@ -31,6 +36,7 @@ class _ContactFormState extends State<ContactForm> {
           ),
           SizedBox(height: 16.0),
           TextFormField(
+            validator: _validateEmail,
             onSaved: (value) => _email = value!,
             decoration: InputDecoration(
               labelText: 'Mail',
@@ -41,6 +47,7 @@ class _ContactFormState extends State<ContactForm> {
           ),
           SizedBox(height: 16.0),
           TextFormField(
+            validator: _validatePhoneNumber,
             onSaved: (value) => _phoneNumber = value!,
             decoration: InputDecoration(
               labelText: 'Phone Number',
@@ -51,11 +58,7 @@ class _ContactFormState extends State<ContactForm> {
           ),
           SizedBox(height: 16.0),
           ElevatedButton(
-            onPressed: () {
-              _formKey.currentState!.save();
-              // You can now use _name, _email, and _phoneNumber as needed
-              print('Name: $_name, Email: $_email, Phone: $_phoneNumber');
-            },
+            onPressed: _onSaveContactButtonPressed,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blueAccent,
               foregroundColor: Colors.white,
@@ -77,5 +80,54 @@ class _ContactFormState extends State<ContactForm> {
         ],
       ),
     );
+  }
+
+  String? _validateName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Enter a name';
+    }
+    return null;
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Enter an email';
+    }
+    // Simple email validation
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+    if (!emailRegex.hasMatch(value)) {
+      return 'Enter a valid email';
+    }
+    return null;
+  }
+
+  String? _validatePhoneNumber(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Enter a phone number';
+    }
+    final phoneRegex = RegExp(
+      r'^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$',
+    );
+    if (!phoneRegex.hasMatch(value)) {
+      return 'Enter a valid phone number';
+    }
+    return null;
+  }
+
+  void _onSaveContactButtonPressed() {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    _formKey.currentState!.save();
+
+    final newContact = Contact(
+      name: _name,
+      email: _email,
+      phoneNumber: _phoneNumber,
+    );
+
+    ScopedModel.of<ContactsModel>(context).addContact(newContact);
+
+    //Navigator.of(context).pop();
   }
 }

@@ -14,6 +14,15 @@ class ContactsModel extends Model {
   // get only property, makes sure that
   List<Contact> get contacts => _contacts;
 
+  void addContact(Contact contact) {
+    print(_contacts.length);
+    _contacts.add(contact);
+    //_sortContacts();
+    print(_contacts.length);
+
+    notifyListeners();
+  }
+
   void changeFavoriteStatus(int index) {
     _contacts[index].isFavorite = !_contacts[index].isFavorite;
     _sortContacts();
