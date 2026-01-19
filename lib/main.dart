@@ -1,4 +1,3 @@
-import 'package:contact_app/ui/contact/contact_create_page.dart';
 import 'package:contact_app/ui/contacts_list/contacts_list_page.dart';
 import 'package:contact_app/ui/model/contacts_model.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +18,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.lightBlue)),
-        home: ContactCreatePage(),
+        home: ContactsListPage(),
       ),
     );
   }

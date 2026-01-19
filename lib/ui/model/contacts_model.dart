@@ -3,7 +3,7 @@ import 'package:faker/faker.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class ContactsModel extends Model {
-  List<Contact> _contacts = List.generate(50, (index) {
+  List<Contact> _contacts = List.generate(5, (index) {
     return Contact(
       name: Faker().person.name(),
       email: Faker().internet.email(),
@@ -15,11 +15,19 @@ class ContactsModel extends Model {
   List<Contact> get contacts => _contacts;
 
   void addContact(Contact contact) {
-    print(_contacts.length);
     _contacts.add(contact);
     //_sortContacts();
-    print(_contacts.length);
+    notifyListeners();
+  }
 
+  void updateContact(Contact contact, int index) {
+    _contacts[index] = contact;
+    //_sortContacts();
+    notifyListeners();
+  }
+
+  void deleteContact(int index) {
+    _contacts.removeAt(index);
     notifyListeners();
   }
 

@@ -1,8 +1,7 @@
-import 'package:contact_app/data/contact.dart';
+import 'package:contact_app/ui/contact/contact_create_page.dart';
 import 'package:contact_app/ui/contacts_list/widget/contact_title.dart';
 import 'package:contact_app/ui/model/contacts_model.dart';
 import 'package:flutter/material.dart';
-import 'package:faker/faker.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class ContactsListPage extends StatefulWidget {
@@ -31,6 +30,14 @@ class _ContactsListPageState extends State<ContactsListPage> {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const ContactCreatePage()));
+        },
+        child: Icon(Icons.person_add),
       ),
     );
   }

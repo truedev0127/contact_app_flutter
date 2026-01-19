@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class ContactForm extends StatefulWidget {
-  const ContactForm({super.key});
+  const ContactForm({super.key, this.editedContact, this.contactIndex});
+
+  final Contact? editedContact;
+  final int? contactIndex;
 
   @override
   State<ContactForm> createState() => _ContactFormState();
@@ -14,6 +17,9 @@ class _ContactFormState extends State<ContactForm> {
   late String _name;
   late String _email;
   late String _phoneNumber;
+
+  bool get isEditMode =>
+      widget.editedContact != null && widget.contactIndex != null;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -26,6 +32,7 @@ class _ContactFormState extends State<ContactForm> {
           SizedBox(height: 16.0),
           TextFormField(
             onSaved: (value) => _name = value!,
+            initialValue: widget.editedContact?.name,
             validator: _validateName,
             decoration: InputDecoration(
               labelText: 'Name',
@@ -36,6 +43,7 @@ class _ContactFormState extends State<ContactForm> {
           ),
           SizedBox(height: 16.0),
           TextFormField(
+            initialValue: widget.editedContact?.email,
             validator: _validateEmail,
             onSaved: (value) => _email = value!,
             decoration: InputDecoration(
@@ -47,6 +55,7 @@ class _ContactFormState extends State<ContactForm> {
           ),
           SizedBox(height: 16.0),
           TextFormField(
+            initialValue: widget.editedContact?.phoneNumber,
             validator: _validatePhoneNumber,
             onSaved: (value) => _phoneNumber = value!,
             decoration: InputDecoration(
@@ -120,14 +129,21 @@ class _ContactFormState extends State<ContactForm> {
     }
     _formKey.currentState!.save();
 
-    final newContact = Contact(
+    final newOrEditedContact = Contact(
       name: _name,
       email: _email,
       phoneNumber: _phoneNumber,
+      isFavorite: widget.editedContact?.isFavorite ?? false,
     );
 
-    ScopedModel.of<ContactsModel>(context).addContact(newContact);
+    if (isEditMode) {
+      ScopedModel.of<ContactsModel>(
+        context,
+      ).updateContact(newOrEditedContact, widget.contactIndex!);
+    } else {
+      ScopedModel.of<ContactsModel>(context).addContact(newOrEditedContact);
+    }
 
-    //Navigator.of(context).pop();
+    Navigator.of(context).pop();
   }
 }
