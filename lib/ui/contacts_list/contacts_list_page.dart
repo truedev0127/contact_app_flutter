@@ -1,4 +1,5 @@
 import 'package:contact_app/data/contact.dart';
+import 'package:contact_app/ui/contacts_list/widget/contact_title.dart';
 import 'package:flutter/material.dart';
 import 'package:faker/faker.dart';
 
@@ -36,25 +37,18 @@ class _ContactsListPageState extends State<ContactsListPage> {
         itemCount: _contacts.length,
         // Runs and Builds every single item list item
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(_contacts[index].name),
-            subtitle: Text(_contacts[index].email),
-            trailing: IconButton(
-              onPressed: () {
-                setState(() {
-                  _contacts[index].isFavorite = !_contacts[index].isFavorite;
-                  _contacts.sort((a, b) {
-                    if (a.isFavorite && !b.isFavorite) return -1;
-                    if (!a.isFavorite && b.isFavorite) return 1;
-                    return 0;
-                  });
+          return ContactTitle(
+            contact: _contacts[index],
+            onFavoriteToggle: () {
+              setState(() {
+                _contacts[index].isFavorite = !_contacts[index].isFavorite;
+                _contacts.sort((a, b) {
+                  if (a.isFavorite && !b.isFavorite) return -1;
+                  if (!a.isFavorite && b.isFavorite) return 1;
+                  return 0;
                 });
-              },
-              icon: Icon(
-                _contacts[index].isFavorite ? Icons.star : Icons.star_border,
-                color: _contacts[index].isFavorite ? Colors.amber : Colors.grey,
-              ),
-            ),
+              });
+            },
           );
         },
       ),
