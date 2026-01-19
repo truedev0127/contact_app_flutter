@@ -16,11 +16,28 @@ class ContactsModel extends Model {
 
   void changeFavoriteStatus(int index) {
     _contacts[index].isFavorite = !_contacts[index].isFavorite;
-    _contacts.sort((a, b) {
-      if (a.isFavorite && !b.isFavorite) return -1;
-      if (!a.isFavorite && b.isFavorite) return 1;
-      return 0;
-    });
+    _sortContacts();
     notifyListeners();
+  }
+
+  void _sortContacts() {
+    _contacts.sort((a, b) {
+      int comparisonResult;
+      comparisonResult = _compareBasedOnFavoriteStatues(a, b);
+      if (comparisonResult == 0) {
+        comparisonResult = _compareAlphabetically(a, b);
+      }
+      return comparisonResult;
+    });
+  }
+
+  int _compareBasedOnFavoriteStatues(Contact a, Contact b) {
+    if (a.isFavorite && !b.isFavorite) return -1;
+    if (!a.isFavorite && b.isFavorite) return 1;
+    return 0;
+  }
+
+  int _compareAlphabetically(Contact a, Contact b) {
+    return a.name.compareTo(b.name);
   }
 }
