@@ -3,18 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:faker/faker.dart';
 
 class ContactsListPage extends StatefulWidget {
+  const ContactsListPage({super.key});
+
   @override
   State<ContactsListPage> createState() => _ContactsListPageState();
 }
 
 class _ContactsListPageState extends State<ContactsListPage> {
-  List<Contact> _contacts = List.generate(50, (index) {
-    return Contact(
-      name: Faker().person.name(),
-      email: Faker().internet.email(),
-      phoneNumber: Faker().phoneNumber.us(),
-    );
-  });
+  late List<Contact> _contacts;
+
+  @override
+  void initState() {
+    super.initState();
+    _contacts = List.generate(50, (index) {
+      return Contact(
+        name: Faker().person.name(),
+        email: Faker().internet.email(),
+        phoneNumber: Faker().phoneNumber.us(),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +39,22 @@ class _ContactsListPageState extends State<ContactsListPage> {
           return ListTile(
             title: Text(_contacts[index].name),
             subtitle: Text(_contacts[index].email),
+            trailing: IconButton(
+              onPressed: () {
+                setState(() {
+                  _contacts[index].isFavorite = !_contacts[index].isFavorite;
+                  _contacts.sort((a, b) {
+                    if (a.isFavorite && !b.isFavorite) return -1;
+                    if (!a.isFavorite && b.isFavorite) return 1;
+                    return 0;
+                  });
+                });
+              },
+              icon: Icon(
+                _contacts[index].isFavorite ? Icons.star : Icons.star_border,
+                color: _contacts[index].isFavorite ? Colors.amber : Colors.grey,
+              ),
+            ),
           );
         },
       ),
