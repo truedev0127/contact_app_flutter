@@ -156,6 +156,11 @@ class _ContactFormState extends State<ContactForm> {
                     source: ImageSource.camera,
                   );
                   // Handle the captured image
+                  setState(() {
+                    if (image != null) {
+                      _contactImageFile = File(image.path);
+                    }
+                  });
                   Navigator.of(context).pop();
                 },
               ),
