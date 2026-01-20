@@ -41,6 +41,7 @@ class _ContactFormState extends State<ContactForm> {
     return Form(
       key: _formKey,
       child: ListView(
+        padding: EdgeInsets.all(8.0),
         children: <Widget>[
           SizedBox(height: 16.0),
           _buildContactPicture(),
@@ -216,9 +217,7 @@ class _ContactFormState extends State<ContactForm> {
     if (value == null || value.isEmpty) {
       return 'Enter a phone number';
     }
-    final phoneRegex = RegExp(
-      r'^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$',
-    );
+    final phoneRegex = RegExp(r'^\+?[0-9]{7,15}$');
     if (!phoneRegex.hasMatch(value)) {
       return 'Enter a valid phone number';
     }

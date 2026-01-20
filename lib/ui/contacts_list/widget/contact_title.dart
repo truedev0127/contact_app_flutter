@@ -36,7 +36,7 @@ class ContactTitle extends StatelessWidget {
             label: 'Call',
           ),
           SlidableAction(
-            onPressed: _sendEmail,
+            onPressed: (context) => _sendEmail(context, displayedContact.email),
             backgroundColor: Color.fromARGB(255, 82, 207, 66),
             foregroundColor: Colors.white,
             icon: Icons.mail,
@@ -126,17 +126,20 @@ class ContactTitle extends StatelessWidget {
 
   Future _callPhoneNumber(BuildContext context, String number) async {
     // Implement call functionality here
-    final Uri url = Uri.parse('tel:$number');
-    if (await url_launcher.canLaunchUrl(url)) {
-      await url_launcher.canLaunchUrl(url);
-    } else {
-      final snackBar = SnackBar(content: Text('Could not launch $url'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+    final Uri launchUri = Uri(scheme: 'tel', path: number);
+    await url_launcher.launchUrl(launchUri);
+
+    // if (await url_launcher.canLaunchUrl(launchUri)) {
+    //   await url_launcher.launchUrl(launchUri);
+    // } else {
+    //   final snackBar = SnackBar(content: Text('Could not launch $launchUri'));
+    //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    // }
   }
 
-  void _sendEmail(BuildContext context) {
+  Future _sendEmail(BuildContext context, String emailAddress) async {
     // Implement email functionality here
-    print('Sending email...');
+    final Uri launchUri = Uri(scheme: 'mailto', path: emailAddress);
+    await url_launcher.launchUrl(launchUri);
   }
 }
