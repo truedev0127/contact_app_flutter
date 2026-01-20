@@ -7,10 +7,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class ContactForm extends StatefulWidget {
-  const ContactForm({super.key, this.editedContact, this.contactIndex});
+  const ContactForm({super.key, this.editedContact});
 
   final Contact? editedContact;
-  final int? contactIndex;
 
   @override
   State<ContactForm> createState() => _ContactFormState();
@@ -22,8 +21,7 @@ class _ContactFormState extends State<ContactForm> {
   late String _phoneNumber;
   File? _contactImageFile;
 
-  bool get isEditMode =>
-      widget.editedContact != null && widget.contactIndex != null;
+  bool get isEditMode => widget.editedContact != null;
 
   bool get hasSeletedCustomImage => _contactImageFile != null;
 
@@ -242,9 +240,8 @@ class _ContactFormState extends State<ContactForm> {
     );
 
     if (isEditMode) {
-      ScopedModel.of<ContactsModel>(
-        context,
-      ).updateContact(newOrEditedContact, widget.contactIndex!);
+      newOrEditedContact.id = widget.editedContact!.id;
+      ScopedModel.of<ContactsModel>(context).updateContact(newOrEditedContact);
     } else {
       ScopedModel.of<ContactsModel>(context).addContact(newOrEditedContact);
     }

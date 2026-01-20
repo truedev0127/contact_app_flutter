@@ -4,6 +4,7 @@ import 'package:contact_app/ui/model/contacts_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:url_launcher/url_launcher.dart' as url_launcher;
 
 class ContactTitle extends StatelessWidget {
   const ContactTitle({super.key, required this.contactIndex});
@@ -27,7 +28,8 @@ class ContactTitle extends StatelessWidget {
         children: [
           // A SlidableAction can have an icon and/or a label.
           SlidableAction(
-            onPressed: _callPhoneNumber,
+            onPressed: (context) =>
+                _callPhoneNumber(context, displayedContact.phoneNumber),
             backgroundColor: Color.fromARGB(255, 31, 125, 212),
             foregroundColor: Colors.white,
             icon: Icons.call,
@@ -74,7 +76,7 @@ class ContactTitle extends StatelessWidget {
         leading: _buildCircleAvatar(displayedContact),
         trailing: IconButton(
           onPressed: () {
-            model.changeFavoriteStatus(contactIndex);
+            model.changeFavoriteStatus(displayedContact);
           },
           icon: Icon(
             displayedContact.isFavorite ? Icons.star : Icons.star_border,
@@ -84,10 +86,7 @@ class ContactTitle extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) => ContactEditPage(
-                editedContact: displayedContact,
-                contactIndex: contactIndex,
-              ),
+              builder: (_) => ContactEditPage(editedContact: displayedContact),
             ),
           );
         },
@@ -120,12 +119,20 @@ class ContactTitle extends StatelessWidget {
 
   void _deleteContact(BuildContext context) {
     final model = ScopedModel.of<ContactsModel>(context);
-    model.deleteContact(contactIndex);
+    final displayedContact = model.contacts[contactIndex];
+
+    model.deleteContact(displayedContact);
   }
 
-  void _callPhoneNumber(BuildContext context) {
+  Future _callPhoneNumber(BuildContext context, String number) async {
     // Implement call functionality here
-    print('Calling phone number...');
+    final Uri url = Uri.parse('tel:$number');
+    if (await url_launcher.canLaunchUrl(url)) {
+      await url_launcher.canLaunchUrl(url);
+    } else {
+      final snackBar = SnackBar(content: Text('Could not launch $url'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 
   void _sendEmail(BuildContext context) {

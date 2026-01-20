@@ -14,11 +14,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScopedModel(
-      model: ContactsModel(),
+      model: ContactsModel()..loadContacts(),
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-          colorScheme: .fromSeed(
+          colorScheme: ColorScheme.fromSeed(
             seedColor: const Color.fromARGB(255, 252, 2, 2),
           ),
         ),

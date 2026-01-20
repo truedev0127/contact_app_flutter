@@ -22,13 +22,17 @@ class _ContactsListPageState extends State<ContactsListPage> {
       ),
       body: ScopedModelDescendant<ContactsModel>(
         builder: (context, child, model) {
-          return ListView.builder(
-            itemCount: model.contacts.length,
-            // Runs and Builds every single item list item
-            itemBuilder: (context, index) {
-              return ContactTitle(contactIndex: index);
-            },
-          );
+          if (model.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            return ListView.builder(
+              itemCount: model.contacts.length,
+              // Runs and Builds every single item list item
+              itemBuilder: (context, index) {
+                return ContactTitle(contactIndex: index);
+              },
+            );
+          }
         },
       ),
       floatingActionButton: FloatingActionButton(
